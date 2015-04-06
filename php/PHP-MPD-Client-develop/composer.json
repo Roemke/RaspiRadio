@@ -1,0 +1,22 @@
+{
+    "name": "monstergfx/php-mpd-client",
+    "description": "PHP-MPD-Client is a PHP client class for MPD.",
+    "keywords": ["MPD","php"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Dave Thomas",
+            "email": "info@monstergfx.com"
+        }
+    ],
+    "require": {
+    },
+    "require-dev": {
+        "raveren/kint": "dev-master"
+    },
+    "autoload": {
+        "classmap": [
+            "mpd"
+        ]
+    }
+}

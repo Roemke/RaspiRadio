@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<head>
+	<!-- page must be copied to a webserver -->
+	<!-- Basic Page Needs
+	================================================== -->
+	<meta charset="utf-8">
+	<title>JQuery Mobile example</title>
+	<meta name="description" content="simple Information example - watch -
+	Battery - geolocation">
+
+	<!-- Mobile Specific Metas
+	================================================== -->
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <!-- style sheet -->
+	<link rel="stylesheet" type="text/css" href="css/jquery.mobile-1.4.5.css">
+	<link rel="stylesheet" type="text/css" href="css/own.css">
+	<!-- nur jquery selbst-->
+	<script src="js/jquery-2.1.1.min.js" type="text/javascript"></script>
+	<script src="js/jquery.ws.min.js" type="text/javascript"></script>
+	<!-- eigene Javascripts -->
+	<script src="js/stations.js"></script>  
+	<script src="js/common.js"></script>
+
+	<!-- notiz (da schon 2 mal vergessen )  sollte man mobileinit verwenden wollen, muss man vor dem
+	  Einbinden von jquery mobile an den event binden --> 
+	<!-- und jquery mobile js  als letztes --> 
+	<script src="js/jquery.mobile-1.4.5.js" type="text/javascript"></script>
+	<script>
+	$(function(){
+		$( " [data-role='footer']" ).toolbar({ theme: "a" });
+	});
+	</script>
+</head>
+<body>
+	<!-- Primary Page Layout
+	================================================== -->
+	<div data-role="page" id="aktuellPage">
+		<div data-role="header">
+			<h1>Aktuell</h1>
+		</div> <!-- header -->
+		<div data-role="content">
+		</div><!-- data-role content -->
+	</div> <!-- page  ende -->
+	
+  <!-- ============= naechste Seite stations ===================== -->
+  <!-- javascript fuer stations seite -->
+  <script>
+    //standard event fuer Einstellungen, vergleichbar mit document.ready ist 
+    //der Pagecreate-Event
+    //Event reihenfolge:
+    //https://jqmtricks.wordpress.com/2014/03/26/jquery-mobile-page-events/
+    //http://www.gajotres.net/page-events-order-in-jquery-mobile-version-1-4-update/
+  	$(document).on('pagecreate','#stationsPage', function() 
+  	{
+  	  //do nothing maybe later   	   
+  	}); 
+  	//pageshow is deprecated - see gajotres - we have it in common.js
+  </script>
+	<div data-role="page" id='stationsPage'>
+		<div data-role="header">
+			<h1>Sender</h1>
+		</div> <!-- header -->
+		<div data-role="content">
+			<!-- liste fuer Sender 	-->
+			<ol data-role='listview' id='senderList' data-inset='true'>
+			</ol>
+		</div><!-- data-role content -->
+	</div> <!-- page  ende -->
+
+  <!-- ============= naechste About ===================== -->
+	<div data-role="page" id='helpPage'>
+		<div data-role="header">
+			<h1>About</h1>
+			<p> diese Software wurde erstellt  </p>
+		</div> <!-- header -->
+		<div data-role="content">
+			<div id='outLocation' class='bg-info '></div> <!-- fuer ausgabe von Informationen -->
+		  <p>Wundersch&ouml;ne Sammlung von Seiten </p>
+		</div><!-- data-role content -->
+	</div> <!-- page  ende -->
+
+       <!-- external toolbar, remains on all pages, but auto-init does not
+       work - we have to do it by ourself -->
+        <div data-role="footer" data-position='fixed'>
+                <div data-role="navbar">
+                        <ul>
+                                <li>
+                                        <a data-role="button"   data-transition="slideup"	href='#aktuellPage'>Aktuell</a>
+                                </li>
+                                <li>
+                                        <a data-role="button"   data-transition="slideup" href='#stationsPage'>Sender</a>
+                                </li>
+                                <li>
+                                        <a data-role="button"   data-transition="slideup" href='#helpPage'>Hilfe</a>
+                                </li>
+                        </ul>
+                </div><!-- navbar -->
+        </div><!-- footer -->
+
+	<!-- End Document
+	================================================== -->
+
+</body>
+</html>

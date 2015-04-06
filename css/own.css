@@ -1,0 +1,36 @@
+/* eigene css */
+
+		.hidden {
+			display: none;
+		}
+		.bg-info, .bg-danger {
+			border: 1px solid #111;
+			padding: 2px;
+			background-color: #fafffa;
+			margin-left: auto;
+			margin-right: auto;
+		}
+		.bg-danger {
+			background-color: #fffafa;
+		}
+
+
+   .bg-info > p {
+	  /*direct child */
+     margin: 2px; 
+   }
+
+   .bg-warn > p {
+	  /*direct child */
+     margin: 2px; 
+   }
+   
+   #divMap
+   {
+			border: solid black 1px;
+			width: 90%;
+			height: 400px;
+			padding: 2px;
+			margin-left: auto;
+			margin-right: auto;
+	 }
