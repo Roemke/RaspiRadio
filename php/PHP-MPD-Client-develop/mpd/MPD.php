@@ -359,6 +359,12 @@ class MPD {
 		// send the command
 		return static::send("move", $from, $to);
 	}
+	
+	//(kr) play song 
+	public static function play($pos)
+	{
+		return static::send("play",$pos);	
+	}
 }
 
 

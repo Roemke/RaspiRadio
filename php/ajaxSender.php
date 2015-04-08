@@ -54,10 +54,23 @@ class AjaxSender
     $result->exec($query); 
     return $result;
   }
-  
+
+  //try to connect to mpd
+  private function tryConnectMpd()
+  {
+    try
+    {
+      $mpdResult = mpd::connect(); //throws exception if no success        
+    }
+    catch (Exception $e)
+    {
+      $msg = "Think, that mpd is not running? - (" . $e->getMessage() .")";
+      throw new Exception ($msg);
+    }
+  }  
   //get list of sender as json-encoded string and set it to current playlist in mpd
   //requires running mpd
-  private function getSenderFromDB() 
+  private function getStationsFromDB() 
   {
     $db = $this->getDBAccess(); //here not handling exception
     $dbRes = $db->query("SELECT * FROM sender ORDER by pos");
@@ -69,20 +82,38 @@ class AjaxSender
                     ,'url'=>$row['url'], 'additionalUrl' => $row['additionalUrl'] ];
         $stations[] = $row['url']; 
     }
-    try
-    {
-      $mpdResult = mpd::connect(); //throws exception if no success        
-    }
-    catch (Exception $e)
-    {
-      $msg = "Think, that mpd is not running? - (" . $e->getMessage() .")";
-      throw new Exception ($msg);
-    }
-    $mpdResult = mpd::setArray($stations);
+    //$this->tryConnectMpd();
+    //mpd::setArray($stations);
+    //mpd::disconnect();
+    return array($result, $stations);;
+  }
+  //returns mpd status
+  private function getAktuell()
+  {
+    $this->tryConnectMpd();
+    $result = mpd::status();
     mpd::disconnect();
     return $result;
   }
-  
+  //returns current song
+  private function currentSong()
+  {
+    $this->tryConnectMpd();
+    $result = mpd::currentSong();
+    mpd::disconnect();
+    return $result;
+  }
+  //switch station, zero based
+  private function switchTo($station)
+  {
+    $this->tryConnectMpd();
+    list($notUsed,$stations)=$this->getStationsFromDB();
+    mpd::setArray($stations); 
+    $result= mpd::play($station);
+    mpd::disconnect();
+    return $result;
+  }
+  //--------------------------------
   //action which is requested
   public function evaluateRequest()
   {
@@ -99,7 +130,20 @@ class AjaxSender
         switch ($this->action)
         {
           case "liste":
-              $result->result = ($this->getSenderFromDB());
+              list($result->result, $notUsed) = $this->getStationsFromDB();              
+          break;
+          case "aktuell":
+            $result->result = $this->getAktuell();
+          break;
+          case "switch":
+            $station = $_GET['station'];
+            $result->result = $this->switchTo($station-1);
+            break;
+          case "currentSong":
+            $result->result=$this->currentSong();
+            break;
+          default:
+            $result->infoText = "unkown action requested"; 
           break;
         }//eo switch
       }//eo try

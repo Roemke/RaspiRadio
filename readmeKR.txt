@@ -18,4 +18,8 @@ eigene Notizen
   also wieder zurueck auf die reine Ajax-Variante, speichere einen git
   branch developmentWebSocket, falls ich mal details nachlesen moechte
 ---------------------------
+- verzichte auf die Playlist von mpd, er hält das ganze auch nur in Dateien 
+  vor, lade einfach bei auswahl eines senders die queue neu, bei vielen
+  sicher nicht schnell, fuer ein paar sender dürfte es reichen
+
  
