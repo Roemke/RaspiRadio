@@ -1,5 +1,11 @@
 /*
-  handle stuff around list of stations     	 
+  mobile interface
+  set timeout to the functions because the requests are sometimes
+  very long running 
+  I don't understand why, maybe problem is related to sse (seems so)
+  but I'm not sure maybe I should use an update of state on the client 
+  side if the actual window is shown so do all with polling
+  
 */
 
 
@@ -27,7 +33,7 @@ $(document).on('pagecontainershow',function(e,ui)
   {
     case "stationsPage":
       stationsActualize();//ajax request absetzen, siehe js/stations.js
-    break;
+     break;
     case "aktuellPage":
       aktuellActualize(); 
     break;
@@ -39,9 +45,11 @@ $(document).on('pagecontainershow',function(e,ui)
   handle stuff around list of stations     	 
 */
 //ajax request to update the list of stations
+
 function stationsActualize()
 {
   $('#senderList').html('');
+  $.get('php/ajaxSender.php', {action: 'showStations' }, function(data){});
   $.get("php/ajaxSender.php", {action: 'liste'}, function(data)
   {
     //console.log("Answer is " + data);
@@ -69,20 +77,32 @@ function stationsActualize()
 //aktuell gespielt
 function aktuellActualize()
 {
- $.get("php/ajaxSender.php",{action: 'aktuell'}, function(data)
- {
+ $.get('php/ajaxSender.php', {action: 'showActual' }, function(data){});
+ //$.get("php/ajaxSender.php", {action: 'status'}, function(data)
+ 
+ $.ajax({url:"php/ajaxSender.php",data: {action: 'status'}, timeout:3000, success: function(data)
+ { 
   //console.log("answer is " + data);
   data = $.parseJSON(data);
-  var vol = parseFloat(data.result.values[0].split(':')[1]);	
- });
- $.get("php/ajaxSender.php",{action:'currentSong'}, function(data)
- {
-  console.log("answer current: " + data);
-  var values = $.parseJSON(data).result.values;
-  var title = values[1];
-  var name = values[2];
-  console.log("title: " + title + " name: " + name);
- });
+  //console.log(data.result.values + " type " + typeof(data.result.values));
+  var vol = parseFloat(data.result.values.volume);
+  //console.log("Vol is " + vol);
+  	
+ }});
+
+ //$.get("php/ajaxSender.php",{action:'currentSong'}, function(data) {
+ $.ajax({url:"php/ajaxSender.php",data: {action: 'currentSong'}, timeout:3000, success: function(data) {
+  //console.log("answer current: " + data);
+  data = $.parseJSON(data);
+  var name = data.result.values.Name; //Sender und weitere Informationen
+  var title = data.result.values.Title; //gerade gespielt
+  
+  //var values = $.parseJSON(data).result.values;
+  //var title = values[1];
+  //var name = values[2];
+  //console.log("title: " + title + " name: " + name);
+ }});
+ 
 }
 //standard event fuer Einstellungen, vergleichbar mit document.ready ist 
 //der Pagecreate-Event
@@ -91,6 +111,7 @@ function aktuellActualize()
 //http://www.gajotres.net/page-events-order-in-jquery-mobile-version-1-4-update/
 $(document).on('pagecreate','#stationsPage', function() 
 {
+ ServerSentEvents.init();
  $('#senderList').on('click', 'li', function() {
     //console.log($(this).attr('id'));
     //following is not needed
@@ -107,3 +128,41 @@ $(document).on('pagecreate','#stationsPage', function()
   });   
 }); 
 
+$(document).on('pagecreate','#aktuellPage', function() 
+{
+  ServerSentEvents.init();
+});
+//handle server sent events
+// sse.php sends messages with text/event-stream mimetype.
+var ServerSentEvents = new function() {
+  var source = 0 ; // is it a class or is it just a closure :-)?
+
+  /*
+  function closeConnection() {
+    source.close();
+    console.log('> Connection was closed');
+  }*/
+  
+  this.init = function()
+  {
+    return;
+    if (source ==0)
+    {
+      source = new EventSource('php/sse.php');
+      source.addEventListener('message', function(event) {
+        console.log(event.data);
+        var data = JSON.parse(event.data);
+      }, false);
+
+      source.addEventListener('open', function(event) {
+        console.log('> Connection was opened');
+      }, false);
+
+      source.addEventListener('error', function(event) {
+        if (event.eventPhase == 2) { //EventSource.CLOSED - will reconnect
+          console.log('> Connection was closed');
+        }
+      }, false);
+    } //eo source ==0
+  }//end of init();
+};
