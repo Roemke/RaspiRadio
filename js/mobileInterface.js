@@ -48,6 +48,7 @@ $(document).on('pagecontainershow',function(e,ui)
 
 function stationsActualize()
 {
+  ServerSentEvents.close();
   $('#senderList').html('');
   $.get('php/ajaxSender.php', {action: 'showStations' }, function(data){});
   $.get("php/ajaxSender.php", {action: 'liste'}, function(data)
@@ -68,6 +69,8 @@ function stationsActualize()
        }
      }
      $('#senderList').listview('refresh');
+    setTimeout(ServerSentEvents.init,1000); //restart events after 1 second
+     
     }//eo result
     else
       headerMessage("Don't understand - we have no result from ajax call - you should never be here, report a bug");     
@@ -77,31 +80,35 @@ function stationsActualize()
 //aktuell gespielt
 function aktuellActualize()
 {
+ ServerSentEvents.close();
  $.get('php/ajaxSender.php', {action: 'showActual' }, function(data){});
  //$.get("php/ajaxSender.php", {action: 'status'}, function(data)
- 
+
+ /* 
  $.ajax({url:"php/ajaxSender.php",data: {action: 'status'}, timeout:3000, success: function(data)
  { 
-  //console.log("answer is " + data);
+  console.log("answer is " + data);
   data = $.parseJSON(data);
   //console.log(data.result.values + " type " + typeof(data.result.values));
   var vol = parseFloat(data.result.values.volume);
   //console.log("Vol is " + vol);
   	
  }});
-
+ */
  //$.get("php/ajaxSender.php",{action:'currentSong'}, function(data) {
- $.ajax({url:"php/ajaxSender.php",data: {action: 'currentSong'}, timeout:3000, success: function(data) {
+ //$.ajax({url:"php/ajaxSender.php",data: {action: 'currentSong'}, timeout:3000, success: function(data) {
+ //combined status and current
+ $.ajax({url:"php/ajaxSender.php",data: {action: 'statusAndCurrent'}, timeout:3000, success: function(data) {
   //console.log("answer current: " + data);
   data = $.parseJSON(data);
-  var name = data.result.values.Name; //Sender und weitere Informationen
-  var title = data.result.values.Title; //gerade gespielt
-  
-  //var values = $.parseJSON(data).result.values;
-  //var title = values[1];
-  //var name = values[2];
-  //console.log("title: " + title + " name: " + name);
+  var name = data.result[1].values.Name; //Sender und weitere Informationen
+  var title = data.result[1].values.Title; //gerade gespielt
+  var vol = data.result[0].values.volume;
+  setTimeout(ServerSentEvents.init,1000);
+  console.log("title: " + title + " name: " + name + "  Volume " + vol);
  }});
+ 
+ //nach einer sekunde server sent events wieder einschalten
  
 }
 //standard event fuer Einstellungen, vergleichbar mit document.ready ist 
@@ -137,15 +144,16 @@ $(document).on('pagecreate','#aktuellPage', function()
 var ServerSentEvents = new function() {
   var source = 0 ; // is it a class or is it just a closure :-)?
 
-  /*
-  function closeConnection() {
-    source.close();
+  
+  this.close = function () {
+    if (source != 0)
+      source.close();
+    source = 0;
     console.log('> Connection was closed');
-  }*/
+  }
   
   this.init = function()
   {
-    return;
     if (source ==0)
     {
       source = new EventSource('php/sse.php');

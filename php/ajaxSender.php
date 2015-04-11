@@ -102,6 +102,11 @@ class AjaxSender
               $db = new DBRadio();
               list($result->result, $notUsed) = $db->getStationsFromDB();              
           break;
+          case "statusAndCurrent":
+            $res1 = $this->getStatus();
+            $res2 = $this->currentSong();
+            $result->result = array($res1,$res2);
+          break;
           case "status":
             $result->result = $this->getStatus();
           break;

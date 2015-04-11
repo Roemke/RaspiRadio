@@ -70,7 +70,7 @@ do {
   }
   //file_put_contents("/tmp/sse.txt","Zeit ".time()." last: $last actual: $actual\n",FILE_APPEND);
   
-  sleep(1); //sleep half of a second (usleekp needs microseconds)
+  usleep(500000); //sleep half of a second (usleekp needs microseconds)
   //from original author:
   // If we didn't use a while loop, the browser would essentially do polling
   // every ~3seconds. Using the while, we keep the connection open and only make
