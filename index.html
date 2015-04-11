@@ -37,6 +37,15 @@
 			<h1>Aktuell</h1>
 		</div> <!-- header -->
 		<div data-role="content">
+		<p>
+			<div data-role="fieldcontain">
+   			 <label for="volSlider">Volume (<span id='volNumber'>25</span>%):</label>
+      		<input type="range" name="volSlider" id="volSlider" value="25" min="0"
+      			max="100" data-highlight="true"  />
+      </div>		
+      <div><h2> Name: </h2> <span id='name'> </span></div>
+			<div><h2> Title: </h2> <span id='title'> </span></div>
+		</p>
 		</div><!-- data-role content -->
 	</div> <!-- page  ende -->
 	
@@ -71,7 +80,7 @@
 			<h1>&Uuml;ber / Hilfe </h1>
 		</div> <!-- header -->
 		<div data-role="content">
-		<h1 style="font-size:120%;display:inline-block">RaspiRadio</h1> 
+		<h1 style="display:inline-block">RaspiRadio</h1> 
 		&ndash; Mobiles Interface zur Steuerung des MPD. 
 		<p>Ich wollte einen momentan herum liegenden raspberry pi als
 		Internetradio nutzen. Der MPD geh&ouml;rt fast zum Standard,

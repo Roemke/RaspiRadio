@@ -365,6 +365,11 @@ class MPD {
 	{
 		return static::send("play",$pos);	
 	}
+	//(kr) set Volume 
+	public static function setVolume($vol)
+	{
+		return static::send("setvol",$vol);	
+	}
 }
 
 

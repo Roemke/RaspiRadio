@@ -4,8 +4,7 @@
   very long running 
   I don't understand why, maybe problem is related to sse (seems so)
   but I'm not sure maybe I should use an update of state on the client 
-  side if the actual window is shown so do all with polling
-  
+  side if the actual window is shown so do all with polling  
 */
 
 
@@ -45,7 +44,6 @@ $(document).on('pagecontainershow',function(e,ui)
   handle stuff around list of stations     	 
 */
 //ajax request to update the list of stations
-
 function stationsActualize()
 {
   $('#senderList').html('');
@@ -70,7 +68,7 @@ function stationsActualize()
      $('#senderList').listview('refresh');
     }//eo result
     else
-      headerMessage("Don't understand - we have no result from ajax call - you should never be here, report a bug");     
+      headerMessage("Don't understand - we have no result from ajax call - you should never be here :-)");     
   });	
 }
 //----------------------------------------
@@ -78,31 +76,23 @@ function stationsActualize()
 function aktuellActualize()
 {
  $.get('php/ajaxSender.php', {action: 'showActual' }, function(data){});
- //$.get("php/ajaxSender.php", {action: 'status'}, function(data)
- 
- $.ajax({url:"php/ajaxSender.php",data: {action: 'status'}, timeout:3000, success: function(data)
- { 
-  //console.log("answer is " + data);
+ //combined status and current
+ $.ajax({url:"php/ajaxSender.php",data: {action: 'statusAndCurrent'}, timeout:3000, success: function(data) {
+  console.log("answer current: " + data);
   data = $.parseJSON(data);
-  //console.log(data.result.values + " type " + typeof(data.result.values));
-  var vol = parseFloat(data.result.values.volume);
-  //console.log("Vol is " + vol);
-  	
+  var name = data.result[1].values.Name; //Sender und weitere Informationen
+  var title = data.result[1].values.Title; //gerade gespielt
+  var vol = data.result[0].values.volume;
+  $('#volSlider').val(vol).slider('refresh');
+  $('#volNumber').html(vol);
+  console.log("title: " + title + " name: " + name + "  Volume " + vol);
+  if (title == "undefined")
+   title = " &ndash; " ;
+  if (name == "undefined")
+   name = "&ndash;";
+  $('#name').html(name); 
+  $('#title').html(title); 
  }});
-
- //$.get("php/ajaxSender.php",{action:'currentSong'}, function(data) {
- $.ajax({url:"php/ajaxSender.php",data: {action: 'currentSong'}, timeout:3000, success: function(data) {
-  //console.log("answer current: " + data);
-  data = $.parseJSON(data);
-  var name = data.result.values.Name; //Sender und weitere Informationen
-  var title = data.result.values.Title; //gerade gespielt
-  
-  //var values = $.parseJSON(data).result.values;
-  //var title = values[1];
-  //var name = values[2];
-  //console.log("title: " + title + " name: " + name);
- }});
- 
 }
 //standard event fuer Einstellungen, vergleichbar mit document.ready ist 
 //der Pagecreate-Event
@@ -111,58 +101,23 @@ function aktuellActualize()
 //http://www.gajotres.net/page-events-order-in-jquery-mobile-version-1-4-update/
 $(document).on('pagecreate','#stationsPage', function() 
 {
- ServerSentEvents.init();
  $('#senderList').on('click', 'li', function() {
-    //console.log($(this).attr('id'));
-    //following is not needed
-    //$('#senderList').data('sender',$(this).attr('id').replace("sender","")); //attach selected Index to #senderList
-    //console.log($('#senderList').data('sender')); 
-    
-    //switch mpd
     $.get("php/ajaxSender.php",{action: 'switch', station:  $(this).attr('id').replace("sender","")}, function(data)
        {
          console.log("answer of switch: " + data); 
        });
     //change page to aktuell 
-    $(document.body).pagecontainer('change',$('#aktuellPage'),{transition: 'slideup'});
+    //$(document.body).pagecontainer('change',$('#aktuellPage'),{transition: 'slideup'});
   });   
 }); 
 
 $(document).on('pagecreate','#aktuellPage', function() 
 {
-  ServerSentEvents.init();
+ $("#volSlider").on( "slidestop", function( event, ui ) {
+  var vol = $('#volSlider').val();
+  $('#volNumber').html(vol);
+    $.get("php/ajaxSender.php",{action: 'volume', value: vol }, function(data)
+       {
+       });
+ } );
 });
-//handle server sent events
-// sse.php sends messages with text/event-stream mimetype.
-var ServerSentEvents = new function() {
-  var source = 0 ; // is it a class or is it just a closure :-)?
-
-  /*
-  function closeConnection() {
-    source.close();
-    console.log('> Connection was closed');
-  }*/
-  
-  this.init = function()
-  {
-    return;
-    if (source ==0)
-    {
-      source = new EventSource('php/sse.php');
-      source.addEventListener('message', function(event) {
-        console.log(event.data);
-        var data = JSON.parse(event.data);
-      }, false);
-
-      source.addEventListener('open', function(event) {
-        console.log('> Connection was opened');
-      }, false);
-
-      source.addEventListener('error', function(event) {
-        if (event.eventPhase == 2) { //EventSource.CLOSED - will reconnect
-          console.log('> Connection was closed');
-        }
-      }, false);
-    } //eo source ==0
-  }//end of init();
-};

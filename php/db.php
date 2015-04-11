@@ -11,6 +11,7 @@
   ip is used to store the state which a client has or has he value global
   -> if clients state is different from global state the sse.php script
   can inform the client to change the view
+  no, only one row in status, I have stopped experiments with server sent events
 */
 abstract class States
 {

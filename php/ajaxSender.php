@@ -59,8 +59,14 @@ class AjaxSender
   {
     $this->tryConnectMpd();
     $result = mpd::currentSong();
-    mpd::disconnect();
+    //file_put_contents("/tmp/bla.txt",$result['values']);
+    mpd::disconnect(); //Pos stores the number of the station
     $result['values'] = $this->objectFromMPDValues($result['values']);
+    $db = new DBRadio();
+    list($stations,$notUsed)=$db->getStationsFromDB();
+    //file_put_contents("/tmp/bla.txt",$stations[$result['values']]);
+    //change name to value out of "my db"
+    $result['values']->Name = $stations[$result['values']->Pos]['name'];    
     return $result;
   }
   //switch station, zero based
@@ -71,6 +77,13 @@ class AjaxSender
     list($notUsed,$stations)=$db->getStationsFromDB();
     mpd::setArray($stations); 
     $result= mpd::play($station);
+    mpd::disconnect();
+    return $result;
+  }
+  private function setVolume($value)
+  {
+    $this->tryConnectMpd();
+    $result= mpd::setVolume($value);
     mpd::disconnect();
     return $result;
   }
@@ -102,6 +115,11 @@ class AjaxSender
               $db = new DBRadio();
               list($result->result, $notUsed) = $db->getStationsFromDB();              
           break;
+          case "statusAndCurrent":
+            $res1 = $this->getStatus();
+            $res2 = $this->currentSong();
+            $result->result = array($res1,$res2);
+          break;
           case "status":
             $result->result = $this->getStatus();
           break;
@@ -111,6 +129,9 @@ class AjaxSender
             break;
           case "currentSong":
             $result->result = $this->currentSong();
+            break;
+          case "volume":
+            $result->result =$this->setVolume($_GET['value']);
             break;
           default:
             $result->infoText = "unkown action requested"; 
