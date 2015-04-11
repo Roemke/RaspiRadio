@@ -4,7 +4,7 @@
 	<!-- Basic Page Needs
 	================================================== -->
 	<meta charset="utf-8">
-	<title>JQuery Mobile example</title>
+	<title>Mobile Radio Interface</title>
 	<meta name="description" content="simple Information example - watch -
 	Battery - geolocation">
 
@@ -16,10 +16,8 @@
 	<link rel="stylesheet" type="text/css" href="css/own.css">
 	<!-- nur jquery selbst-->
 	<script src="js/jquery-2.1.1.min.js" type="text/javascript"></script>
-	<script src="js/jquery.ws.min.js" type="text/javascript"></script>
 	<!-- eigene Javascripts -->
-	<script src="js/stations.js"></script>  
-	<script src="js/common.js"></script>
+	<script src="js/mobileInterface.js"></script>  
 
 	<!-- notiz (da schon 2 mal vergessen )  sollte man mobileinit verwenden wollen, muss man vor dem
 	  Einbinden von jquery mobile an den event binden --> 
@@ -39,6 +37,15 @@
 			<h1>Aktuell</h1>
 		</div> <!-- header -->
 		<div data-role="content">
+		<p>
+			<div data-role="fieldcontain">
+   			 <label for="volSlider">Volume (<span id='volNumber'>25</span>%):</label>
+      		<input type="range" name="volSlider" id="volSlider" value="25" min="0"
+      			max="100" data-highlight="true"  />
+      </div>		
+      <div><h2> Name: </h2> <span id='name'> </span></div>
+			<div><h2> Title: </h2> <span id='title'> </span></div>
+		</p>
 		</div><!-- data-role content -->
 	</div> <!-- page  ende -->
 	
@@ -70,12 +77,26 @@
   <!-- ============= naechste About ===================== -->
 	<div data-role="page" id='helpPage'>
 		<div data-role="header">
-			<h1>About</h1>
-			<p> diese Software wurde erstellt  </p>
+			<h1>&Uuml;ber / Hilfe </h1>
 		</div> <!-- header -->
 		<div data-role="content">
-			<div id='outLocation' class='bg-info '></div> <!-- fuer ausgabe von Informationen -->
-		  <p>Wundersch&ouml;ne Sammlung von Seiten </p>
+		<h1 style="display:inline-block">RaspiRadio</h1> 
+		&ndash; Mobiles Interface zur Steuerung des MPD. 
+		<p>Ich wollte einen momentan herum liegenden raspberry pi als
+		Internetradio nutzen. Der MPD geh&ouml;rt fast zum Standard,
+		aber ein Interface, dass sich nur auf die Bedienung als Radio konzentriert
+		habe ich nicht gefunden. ympd ist sehr nett, aber unterst&uuml;tzt mir zur
+		viel.</p>
+		<p> Zur Steuerung gibt es nicht viel zu sagen, auf der
+		Sender-Seite werden die Sender angezeigt, ein "Click"
+		schaltet um und startet das Abspielen. </p>
+		<p> 
+		 Intern werden die Sender in einer sqlite-Datei vorgehalten,
+		 die Playlists von MPD werden nicht verwendet. Ein einfaches 
+		 Webinterface zum bef&uuml;llen der Senderliste findet sich unter
+		 <a href="dbInterface.php">
+		 http://&lt;raspi-ip&gt;/radio/dbInterface.php</a>. Die Bedienung
+		 ohne Tastatur ist nicht empfehlenswert :-).
 		</div><!-- data-role content -->
 	</div> <!-- page  ende -->
 

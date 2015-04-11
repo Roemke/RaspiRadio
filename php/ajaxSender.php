@@ -1,74 +1,40 @@
 <?php
-require __DIR__ . '/vendor/autoload.php';
-require_once("PHP-MPD-Client-develop/mpd/MPD.php");
+require_once('PHP-MPD-Client-develop/mpd/MPD.php');
+require_once('db.php');
+require_once('AjaxAnswer.php');
 
 use PHPMPDClient\MPD AS mpd;
 
-class AjaxAnswer implements JsonSerializable
-{
-  public $infoText;
-  public $result;
-  public $state; //0 ok, 1 error
-  function __construct($text="", $result="", $state = 0)
-  {
-    $this->infoText = $text;
-    $this->result = $result;
-    $this->state = $state; //state to 1 means error
-  }
-  // function called when encoded with json_encode
-  public function jsonSerialize()
-  {
-    return get_object_vars($this);
-  }
-}
 
 class AjaxSender
 {
   private $action = NULL;
-  private $dbName = "../data/RadioMPD.sqlite";
   private $playList = "stations";
-    
+  private $db;     
   function __construct() {
-    $this->action = $_GET['action'];
-    //print "Konstruktor with " .  $this->action . " and type " . gettype($this->action);
+    $this->action = $_GET['action']; 
   } 
 
     
-  //returns handle for db, if it does not exist create db  
-  private function getDBAccess()
-  {
-    //$db = sqlite_open("sender.sqlite"); wohl alter stil :-), bin wohl zu lang raus, also pdo
-    try  
-    {
-      $result = new PDO("sqlite:" . $this->dbName);
-    }
-    catch (PDOException $e)
-    {
-      $result = $e->getMessage(); //real error, can't solve
-      $result = "I think we have no write access to " .  $this->dbName.", you have to solve it<br>" . $result ; 
-      throw new Exception($result);
-    }
-    //create table(s) if they does not exist
-    $query = "CREATE TABLE IF NOT EXISTS sender (pos INTEGER PRIMARY KEY,  name VARCHAR UNIQUE , url VARCHAR , additionalUrl VARCHAR)";
-    //es far as I understand the type is only a hint how to store the data see type-affinity in https://www.sqlite.org/
-    $result->exec($query); 
-    return $result;
-  }
   
-  //get list of sender as json-encoded string and set it to current playlist in mpd
-  //requires running mpd
-  private function getSenderFromDB() 
+  //helper function - result from mpd often has an array named values, 
+  //there you find key : value -> split it to receive an object
+  private function objectFromMPDValues($values)
   {
-    $db = $this->getDBAccess(); //here not handling exception
-    $dbRes = $db->query("SELECT * FROM sender ORDER by pos");
-    $result = array();
-    $stations = array();
-    while($row = $dbRes->fetch(PDO::FETCH_ASSOC)) 
+    $res = new stdclass();
+    foreach ($values as $val)
     {
-        $result[] = ['pos'=>$row['pos'] , 'name'=>$row['name']
-                    ,'url'=>$row['url'], 'additionalUrl' => $row['additionalUrl'] ];
-        $stations[] = $row['url']; 
+      list ($key,$value) = split(':',$val,2);
+      $key = trim($key);
+      $value = trim ($value);
+      $res->$key = $value;
     }
+    return $res;
+  }
+
+  //try to connect to mpd
+  private function tryConnectMpd()
+  {
     try
     {
       $mpdResult = mpd::connect(); //throws exception if no success        
@@ -78,11 +44,50 @@ class AjaxSender
       $msg = "Think, that mpd is not running? - (" . $e->getMessage() .")";
       throw new Exception ($msg);
     }
-    $mpdResult = mpd::setArray($stations);
+  }  
+  //returns mpd status
+  private function getStatus()
+  {
+    $this->tryConnectMpd();
+    $result = mpd::status();
+    mpd::disconnect();
+    $result['values'] = $this->objectFromMPDValues($result['values']);
+    return $result;
+  }
+  //returns current song
+  private function currentSong()
+  {
+    $this->tryConnectMpd();
+    $result = mpd::currentSong();
+    //file_put_contents("/tmp/bla.txt",$result['values']);
+    mpd::disconnect(); //Pos stores the number of the station
+    $result['values'] = $this->objectFromMPDValues($result['values']);
+    $db = new DBRadio();
+    list($stations,$notUsed)=$db->getStationsFromDB();
+    //file_put_contents("/tmp/bla.txt",$stations[$result['values']]);
+    //change name to value out of "my db"
+    $result['values']->Name = $stations[$result['values']->Pos]['name'];    
+    return $result;
+  }
+  //switch station, zero based
+  private function switchTo($station)
+  {
+    $db = new DBRadio();
+    $this->tryConnectMpd();
+    list($notUsed,$stations)=$db->getStationsFromDB();
+    mpd::setArray($stations); 
+    $result= mpd::play($station);
     mpd::disconnect();
     return $result;
   }
-  
+  private function setVolume($value)
+  {
+    $this->tryConnectMpd();
+    $result= mpd::setVolume($value);
+    mpd::disconnect();
+    return $result;
+  }
+  //--------------------------------
   //action which is requested
   public function evaluateRequest()
   {
@@ -98,8 +103,38 @@ class AjaxSender
       {
         switch ($this->action)
         {
+          case "showStations": //show stations clicked
+            $db = new DBRadio();
+            $result->result = $db->setState(States::Stations); 
+          break;
+          case "showActual": //show stations clicked
+            $db = new DBRadio();
+            $result->result = $db->setState(States::Actual); 
+          break;
           case "liste":
-              $result->result = ($this->getSenderFromDB());
+              $db = new DBRadio();
+              list($result->result, $notUsed) = $db->getStationsFromDB();              
+          break;
+          case "statusAndCurrent":
+            $res1 = $this->getStatus();
+            $res2 = $this->currentSong();
+            $result->result = array($res1,$res2);
+          break;
+          case "status":
+            $result->result = $this->getStatus();
+          break;
+          case "switch":
+            $station = $_GET['station'];
+            $result->result = $this->switchTo($station-1);
+            break;
+          case "currentSong":
+            $result->result = $this->currentSong();
+            break;
+          case "volume":
+            $result->result =$this->setVolume($_GET['value']);
+            break;
+          default:
+            $result->infoText = "unkown action requested"; 
           break;
         }//eo switch
       }//eo try
@@ -117,5 +152,5 @@ $sender = new AjaxSender();
 //phpinfo();
 $retVal = $sender->evaluateRequest();
 echo $retVal;
-
+//echo "hello";
 ?>

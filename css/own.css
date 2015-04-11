@@ -24,13 +24,23 @@
 	  /*direct child */
      margin: 2px; 
    }
-   
-   #divMap
-   {
-			border: solid black 1px;
-			width: 90%;
-			height: 400px;
-			padding: 2px;
-			margin-left: auto;
-			margin-right: auto;
-	 }
+  
+  h1 {
+		font-size: 120%;
+	} 
+	h2 {
+		display:		inline-block;
+		font-size:	110%;
+		margin: 2px;
+	}
+	.ui-slider-input {
+    display : none !important;
+	}
+/*
+  .ui-slider {
+		width:	70% !important;
+	}
+  .ui-slider-track{
+		margin: 0pt;
+	}
+*/
