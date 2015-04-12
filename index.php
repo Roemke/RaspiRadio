@@ -6,6 +6,15 @@
 	<meta charset="utf-8">
 	<title>Mobile Radio Interface</title>
 	<meta name="description" content="simple Radio Interface for MPD">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="apple-mobile-web-app-capable" content="yes" >
+        <meta name="apple-mobile-web-app-status-bar-style" content="black" >
+        <link rel="apple-touch-icon" href="data/radio.png"/>
+        <link rel="apple-touch-icon-precomposed" href="data/radio.png"/>
+        <meta name="mobile-web-app-capable" content="yes">
+        <link rel="shortcut icon" sizes="196x196" href="data/radio.png">
+        <link rel="shortcut icon" sizes="128x128" href="data/radio.png">
+        <link rel="shortcut icon" href="data/radio.png">
 
 	<!-- Mobile Specific Metas
 	================================================== -->
@@ -23,9 +32,12 @@
 	<!-- und jquery mobile js  als letztes --> 
 	<script src="js/jquery.mobile-1.4.5.js" type="text/javascript"></script>
 	<script>
-	$(function(){
+	/*$(function(){
 		$( " [data-role='footer']" ).toolbar({ theme: "a" });
 	});
+  	external toolbar does not work perfect, on first page it vanishes if I
+	clic in empty field on mobile chrome
+	*/
 	</script>
 </head>
 <body>
@@ -36,25 +48,29 @@
 			<h1>Aktuell</h1>
 		</div> <!-- header -->
 		<div data-role="content">
-			<div data-role="fieldcontain">
+      <div class='framed'>
+			  <div data-role="fieldcontain">
    			 <label for="volSlider">Volume (<span id='volNumber'>25</span>%):</label>
       			 <input type="range" name="volSlider" id="volSlider" value="25" min="0"
       			max="100" data-highlight="true"  />
-      </div>		
-      <div><h2> Name: </h2> <span id='name'> </span></div>
-			<div><h2> Title: </h2> <span id='title'> </span></div>
+        </div><!--fieldcontain-->
+        <div data-role="navbar" class="myControlButtons">
+         <ul>
+           <li><a id="bPlay" data-role="button" href='#'> Play </a></li>
+           <li><a id="bStop" data-role="button" href='#'> Stop </a></li>
+         </ul>
+        </div><!--navbar-->
+      </div> <!--framed -->
+      <div class="framed">
+        <div><h2> Name: </h2> <span id='name'> </span></div>
+			  <div><h2> Title: </h2> <span id='title'> </span></div>
+		  </div>
 		</div><!-- data-role content -->
+	<?php include("footer.php") ?>
 	</div> <!-- page  ende -->
 	
   <!-- ============= naechste Seite stations ===================== -->
   <!-- javascript fuer stations seite -->
-  <script>
-    //standard event fuer Einstellungen, vergleichbar mit document.ready ist 
-    //der Pagecreate-Event
-    //Event reihenfolge:
-    //https://jqmtricks.wordpress.com/2014/03/26/jquery-mobile-page-events/
-    //http://www.gajotres.net/page-events-order-in-jquery-mobile-version-1-4-update/
-  </script>
 	<div data-role="page" id='stationsPage'>
 		<div data-role="header">
 			<h1>Sender</h1>
@@ -64,6 +80,7 @@
 			<ol data-role='listview' id='senderList' data-inset='true'>
 			</ol>
 		</div><!-- data-role content -->
+		<?php include("footer.php") ?>
 	</div> <!-- page  ende -->
 
   <!-- ============= naechste About ===================== -->
@@ -88,29 +105,12 @@
 		 Webinterface zum bef&uuml;llen der Senderliste findet sich unter
 		 <a href="php/dbInterface.php" target="_blank">
 		 http://&lt;raspi-ip&gt;/radio/dbInterface.php</a>. Die Bedienung
-		 ohne Tastatur ist nicht empfehlenswert :-).
+		 ohne Tastatur ist nicht empfehlenswert :-).</p>
 		</div><!-- data-role content -->
+	<?php include("footer.php") ?>
 	</div> <!-- page  ende -->
 
-       <!-- external toolbar, remains on all pages, but auto-init does not
-       work - we have to do it by ourself -->
-        <div data-role="footer" data-position='fixed'>
-                <div data-role="navbar">
-                        <ul>
-                                <li>
-                                        <a data-role="button"   data-transition="slideup"	href='#aktuellPage'>Aktuell</a>
-                                </li>
-                                <li>
-                                        <a data-role="button"   data-transition="slideup" href='#stationsPage'>Sender</a>
-                                </li>
-                                <li>
-                                        <a data-role="button"   data-transition="slideup" href='#helpPage'>Hilfe</a>
-                                </li>
-                        </ul>
-                </div><!-- navbar -->
-        </div><!-- footer -->
-
-	<!-- End Document
+ 	<!-- End Document
 	================================================== -->
 
 </body>

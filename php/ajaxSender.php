@@ -87,6 +87,13 @@ class AjaxSender
     mpd::disconnect();
     return $result;
   }
+  private function pause($value)
+  {
+    $this->tryConnectMpd();
+    $result= mpd::pause($value);
+    mpd::disconnect();
+    return $result;
+  }
   private function saveDbData($data)
   {
     $db = new DBRadio();
@@ -133,6 +140,14 @@ class AjaxSender
           case "status":
             $result->result = $this->getStatus();
           break;
+          case "pause":
+            $result->result = $this->pause(1);
+          break;
+          case "play":
+            $result->result = $this->pause(0);
+          break;
+          
+          
           case "switch":
             $station = $_GET['station'];
             $result->result = $this->switchTo($station-1);

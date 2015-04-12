@@ -112,8 +112,8 @@ function handleStatusCurrent(data)
   {
     var name = data.result[1].values.Name; //Sender und weitere Informationen
     var title = data.result[1].values.Title; //gerade gespielt
-    var vol = data.result[0].values.volume;
-    
+    var vol = parseFloat(data.result[0].values.volume);
+    vol = (vol - 50 )*2; //50 % on mpd is nothing
     if (globalState.vol != vol)
     {
       $('#volSlider').val(vol).slider('refresh');
@@ -157,12 +157,22 @@ $(document).on('pagecreate','#aktuellPage', function()
  globalState.actualInitialized = true; 
  Actualize.start();
  $("#volSlider").on( "slidestop", function( event, ui ) {
-  var vol = $('#volSlider').val();
+  var vol = parseInt($('#volSlider').val());
+  var volCor = parseInt(50 + vol/2);
+  //console.log("vol Cor is " + volCor);
   $('#volNumber').html(vol);
-    $.get("php/ajaxSender.php",{action: 'volume', value: vol }, function(data)
+    $.get("php/ajaxSender.php",{action: 'volume', value: volCor }, function(data)
        {
        });
- } );
+ });//volslider
+ $('#bPlay').on('click',function(event,ui)
+   {
+    $.get("php/ajaxSender.php",{action: 'play' });
+   });	
+ $('#bStop').on('click',function(event, ui)
+   {
+    $.get("php/ajaxSender.php",{action: 'pause' }); //stop means pause on radio
+   });
 });
 
 //daten aktualisieren

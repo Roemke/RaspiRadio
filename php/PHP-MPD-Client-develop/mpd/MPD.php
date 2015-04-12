@@ -365,6 +365,11 @@ class MPD {
 	{
 		return static::send("play",$pos);	
 	}
+	//(kr) start/stop playing 
+	public static function pause($val)
+	{
+		return static::send("pause",$val);	
+	}
 	//(kr) set Volume 
 	public static function setVolume($vol)
 	{
