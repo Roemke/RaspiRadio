@@ -22,5 +22,8 @@ Ajax-Requests die ich zum Umschalten verwendet habe, bis zu einer
 Minute dauerten - auch ein Abbrechen der Verbindung über die SSE 
 brachte nichts - sehr seltsam / unverstanden
 
+Beachten: Rechte auf data/RadioMPD.sqlite muessen so sein, dass
+der User unter dem der Webserver laeuft, schreiben darf.
+
 
 
