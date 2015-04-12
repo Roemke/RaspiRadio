@@ -36,7 +36,6 @@
 			<h1>Aktuell</h1>
 		</div> <!-- header -->
 		<div data-role="content">
-		<p>
 			<div data-role="fieldcontain">
    			 <label for="volSlider">Volume (<span id='volNumber'>25</span>%):</label>
       			 <input type="range" name="volSlider" id="volSlider" value="25" min="0"
@@ -44,7 +43,6 @@
       </div>		
       <div><h2> Name: </h2> <span id='name'> </span></div>
 			<div><h2> Title: </h2> <span id='title'> </span></div>
-		</p>
 		</div><!-- data-role content -->
 	</div> <!-- page  ende -->
 	
@@ -56,11 +54,6 @@
     //Event reihenfolge:
     //https://jqmtricks.wordpress.com/2014/03/26/jquery-mobile-page-events/
     //http://www.gajotres.net/page-events-order-in-jquery-mobile-version-1-4-update/
-  	$(document).on('pagecreate','#stationsPage', function() 
-  	{
-  	  //do nothing maybe later   	   
-  	}); 
-  	//pageshow is deprecated - see gajotres - we have it in common.js
   </script>
 	<div data-role="page" id='stationsPage'>
 		<div data-role="header">

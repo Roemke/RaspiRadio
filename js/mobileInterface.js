@@ -60,9 +60,9 @@ $(document).on('pagecontainershow',function(e,ui)
 function stationsActualize()
 {
   Actualize.stop();
-  $('#senderList').html('');
-  headerReset();
   $.get('php/ajaxSender.php', {action: 'showStations' }, function(data){});
+  headerReset();
+  $('#senderList').html('');
   $.get("php/ajaxSender.php", {action: 'liste'}, function(data)
   {
     //console.log("Answer is " + data);
@@ -103,7 +103,7 @@ function aktuellActualize()
 
 function handleStatusCurrent(data)
 {
-  console.log(data);		
+  //console.log(data);		
   data = $.parseJSON(data);
   headerReset();
   if (data.state == 1) //fehler
