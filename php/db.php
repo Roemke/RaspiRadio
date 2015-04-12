@@ -90,13 +90,31 @@ class DBRadio
     $db->query("insert or ignore into state (ip,actual) values('$ip',$newState)");
     //file_put_contents("/tmp/bla.txt","insert or ignore into state (ip,actual) values('$ip',$newState)");
   }
-  //get last and actual state
+  //get actual state
   public function getState($ip='global')
   {
     $db = $this->getDBAccess();
     $dbRes = $db->query('select * from state where ip="'.$ip.'"');
     $row = $dbRes->fetch(PDO::FETCH_ASSOC);
     return $row['actual'] ;
-  } 
+  }
+  // 
+  public function saveToDb($data)
+  {
+    $db = $this->getDBAccess();
+    $db->query("delete  from sender");
+    $data=trim($data);
+    $lines = explode("\n",$data);    
+    foreach ($lines as $line)
+    {
+      list ($name, $url, $addUrl) = explode(',',$line);
+      $name = trim($name);
+      $url = trim($url);
+      $addUrl=trim($addUrl); 
+      $q = "INSERT into sender (name, url, additionalUrl) values ('$name', '$url','$addUrl')";
+      if ($url != '')
+        $db->query($q);
+    }
+  }  
 }
 ?>

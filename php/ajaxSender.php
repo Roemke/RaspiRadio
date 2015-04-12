@@ -12,7 +12,7 @@ class AjaxSender
   private $playList = "stations";
   private $db;     
   function __construct() {
-    $this->action = $_GET['action']; 
+    $this->action = $_REQUEST['action']; //get post and session 
   } 
 
     
@@ -87,6 +87,16 @@ class AjaxSender
     mpd::disconnect();
     return $result;
   }
+  private function saveDbData($data)
+  {
+    $db = new DBRadio();
+    $db->saveToDb($data);
+  }
+  private function getDbState()
+  {
+    $db = new DBRadio();
+    return $db->getState();
+  }
   //--------------------------------
   //action which is requested
   public function evaluateRequest()
@@ -133,6 +143,15 @@ class AjaxSender
           case "volume":
             $result->result =$this->setVolume($_GET['value']);
             break;
+          case "save":
+            $this->saveDbData($_POST['data']);
+            break;
+          case "completeState":
+            $res1 = $this->getStatus();
+            $res2 = $this->currentSong();
+            $res3 = $this->getDbState();
+            $result->result = array($res1,$res2,$res3);
+            break;  
           default:
             $result->infoText = "unkown action requested"; 
           break;

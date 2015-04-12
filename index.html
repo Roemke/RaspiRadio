@@ -5,8 +5,7 @@
 	================================================== -->
 	<meta charset="utf-8">
 	<title>Mobile Radio Interface</title>
-	<meta name="description" content="simple Information example - watch -
-	Battery - geolocation">
+	<meta name="description" content="simple Radio Interface for MPD">
 
 	<!-- Mobile Specific Metas
 	================================================== -->
@@ -40,7 +39,7 @@
 		<p>
 			<div data-role="fieldcontain">
    			 <label for="volSlider">Volume (<span id='volNumber'>25</span>%):</label>
-      		<input type="range" name="volSlider" id="volSlider" value="25" min="0"
+      			 <input type="range" name="volSlider" id="volSlider" value="25" min="0"
       			max="100" data-highlight="true"  />
       </div>		
       <div><h2> Name: </h2> <span id='name'> </span></div>
@@ -94,7 +93,7 @@
 		 Intern werden die Sender in einer sqlite-Datei vorgehalten,
 		 die Playlists von MPD werden nicht verwendet. Ein einfaches 
 		 Webinterface zum bef&uuml;llen der Senderliste findet sich unter
-		 <a href="dbInterface.php">
+		 <a href="php/dbInterface.php" target="_blank">
 		 http://&lt;raspi-ip&gt;/radio/dbInterface.php</a>. Die Bedienung
 		 ohne Tastatur ist nicht empfehlenswert :-).
 		</div><!-- data-role content -->
