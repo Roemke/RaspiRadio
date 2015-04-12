@@ -27,5 +27,8 @@ fazit: laueft aber behindert irgendwie die ajax-requests - verstanden habe
 ich das nicht.
 also evtl. doch alles per polling lösen. Diesen Stand mal in
 developmentServerSentEvents abgelegt
+Die Ajax-Requests wurden sehr langsam, bis zu einer Minute statt 150 ms.
+Auch beim zeitweisen Abschalten der ServerSentEvents. Sehr seltsam.
+
 
  
