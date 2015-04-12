@@ -8,6 +8,14 @@
 */
 
 
+var globalState = {
+ name: '',
+ title: '',
+ vol: '',
+ page: '',
+ actualInitialized: false
+};
+
 function headerMessage(message)
 {
    $('[ data-role="header"]').append(message+'<br>'); 
@@ -31,10 +39,15 @@ $(document).on('pagecontainershow',function(e,ui)
   switch (pageId)
   {
     case "stationsPage":
+      globalState.page = 2;
       stationsActualize();//ajax request absetzen, siehe js/stations.js
      break;
     case "aktuellPage":
+      globalState.page = 1; 
       aktuellActualize(); 
+    break;
+    case "helpPage":
+      globalState.page = 3;
     break;
   } 
 });
@@ -46,7 +59,9 @@ $(document).on('pagecontainershow',function(e,ui)
 //ajax request to update the list of stations
 function stationsActualize()
 {
+  Actualize.stop();
   $('#senderList').html('');
+  headerReset();
   $.get('php/ajaxSender.php', {action: 'showStations' }, function(data){});
   $.get("php/ajaxSender.php", {action: 'liste'}, function(data)
   {
@@ -69,30 +84,55 @@ function stationsActualize()
     }//eo result
     else
       headerMessage("Don't understand - we have no result from ajax call - you should never be here :-)");     
+    Actualize.start();
   });	
 }
 //----------------------------------------
 //aktuell gespielt
 function aktuellActualize()
 {
+ Actualize.stop();
  $.get('php/ajaxSender.php', {action: 'showActual' }, function(data){});
  //combined status and current
  $.ajax({url:"php/ajaxSender.php",data: {action: 'statusAndCurrent'}, timeout:3000, success: function(data) {
-  console.log("answer current: " + data);
-  data = $.parseJSON(data);
-  var name = data.result[1].values.Name; //Sender und weitere Informationen
-  var title = data.result[1].values.Title; //gerade gespielt
-  var vol = data.result[0].values.volume;
-  $('#volSlider').val(vol).slider('refresh');
-  $('#volNumber').html(vol);
-  console.log("title: " + title + " name: " + name + "  Volume " + vol);
-  if (title == "undefined")
-   title = " &ndash; " ;
-  if (name == "undefined")
-   name = "&ndash;";
-  $('#name').html(name); 
-  $('#title').html(title); 
+  //console.log("answer current: " + data);
+  handleStatusCurrent(data);
+  Actualize.start();
  }});
+}
+
+function handleStatusCurrent(data)
+{
+  console.log(data);		
+  data = $.parseJSON(data);
+  headerReset();
+  if (data.state == 1) //fehler
+     headerMessage("Error: " + data.infoText); 
+  else
+  {
+    var name = data.result[1].values.Name; //Sender und weitere Informationen
+    var title = data.result[1].values.Title; //gerade gespielt
+    var vol = data.result[0].values.volume;
+    
+    if (globalState.vol != vol)
+    {
+      $('#volSlider').val(vol).slider('refresh');
+      $('#volNumber').html(vol);
+    }
+    //console.log("title: " + title + " name: " + name + "  Volume " + vol);
+    if (typeof(title) == "undefined" )
+     title = " &ndash; " ;
+    if (typeof(name) == "undefined")
+     name = "&ndash;";
+    if (globalState.name != name)
+     $('#name').html(name); 
+    if (globalState.title != title)
+     $('#title').html(title);
+     
+    globalState.title = title;
+    globalState.name = name;
+    globalState.vol = vol;
+  }
 }
 //standard event fuer Einstellungen, vergleichbar mit document.ready ist 
 //der Pagecreate-Event
@@ -101,10 +141,11 @@ function aktuellActualize()
 //http://www.gajotres.net/page-events-order-in-jquery-mobile-version-1-4-update/
 $(document).on('pagecreate','#stationsPage', function() 
 {
+ Actualize.start();
  $('#senderList').on('click', 'li', function() {
     $.get("php/ajaxSender.php",{action: 'switch', station:  $(this).attr('id').replace("sender","")}, function(data)
        {
-         console.log("answer of switch: " + data); 
+         //console.log("answer of switch: " + data); 
        });
     //change page to aktuell 
     //$(document.body).pagecontainer('change',$('#aktuellPage'),{transition: 'slideup'});
@@ -113,6 +154,8 @@ $(document).on('pagecreate','#stationsPage', function()
 
 $(document).on('pagecreate','#aktuellPage', function() 
 {
+ globalState.actualInitialized = true; 
+ Actualize.start();
  $("#volSlider").on( "slidestop", function( event, ui ) {
   var vol = $('#volSlider').val();
   $('#volNumber').html(vol);
@@ -121,3 +164,53 @@ $(document).on('pagecreate','#aktuellPage', function()
        });
  } );
 });
+
+//daten aktualisieren
+var Actualize = new function()
+{
+  var id = 0;
+  var ajaxRequest = 0;
+  this.start = function()
+  {
+   if (id == 0)
+    id = setTimeout(request, 1000);
+  }
+  this.stop = function()
+  {
+   if (id != 0)
+   {
+    if (ajaxRequest !=0)
+     ajaxRequest.abort();
+    clearTimeout(id);
+   }
+   id = 0;
+  } 
+  
+  function request()
+  {
+   ajaxRequest=$.get("php/ajaxSender.php",{action:'completeState'}, function(data)
+   {
+    //console.log("answer: " + data);
+    if (globalState.actualInitialized)
+     handleStatusCurrent(data);
+    data = JSON.parse(data);
+    var page = data.result[2];
+    //console.log("page " +page);
+    if (globalState.page != 3 && globalState.page != page)
+    {
+      if (page == 1)
+      {
+        $(document.body).pagecontainer('change',$('#aktuellPage'),{transition: 'slideup'});
+        //console.log("switch to page 1");
+      }
+      else if (page == 2)
+      {
+        $(document.body).pagecontainer('change',$('#stationsPage'),{transition: 'slideup'});
+        //console.log("switch to page 2");    
+      }
+      globalState.page = page;
+    }
+    id = setTimeout(request,1000);    
+   });
+  }
+}
