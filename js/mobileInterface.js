@@ -173,6 +173,10 @@ $(document).on('pagecreate','#aktuellPage', function()
    {
     $.get("php/ajaxSender.php",{action: 'pause' }); //stop means pause on radio
    });
+ $('#bOff').on('click',function(event, ui)
+   {
+    $.get("php/ajaxSender.php",{action: 'off' }); //ausschalten
+   });   
 });
 
 //daten aktualisieren

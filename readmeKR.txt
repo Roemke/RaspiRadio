@@ -29,6 +29,17 @@ also evtl. doch alles per polling lösen. Diesen Stand mal in
 developmentServerSentEvents abgelegt
 Die Ajax-Requests wurden sehr langsam, bis zu einer Minute statt 150 ms.
 Auch beim zeitweisen Abschalten der ServerSentEvents. Sehr seltsam.
+--------------------------------------------------
+2015-05-26: off dazu, dazu in sudoers 
+www-data ALL=(ALL) NOPASSWD: /sbin/halt
 
+start-script dazu dazu in /var/www/radio/startRadio.sh
+-> wartet bis mpd laeuft und ruft danach als www-data startRadio.php
+dieses setzt auf Station 0 und Lautstärke auf 70% 
+
+außerdem init-script /etc/init.d/radio als hard link auf 
+/var/www/radio/radio, dieses ruft startRadio.sh und ein 
+pi@raspberrypi /etc/init.d $ sudo insserv radio
+um es als start-script zu etablieren - mal versuchen
 
  

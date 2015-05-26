@@ -22,7 +22,7 @@ abstract class States
 
 class DBRadio
 {
-  private $dbName = "../data/RadioMPD.sqlite";
+  private $dbName = "/var/www/radio/data/RadioMPD.sqlite";
    
   //returns handle for db  
   private function getDBAccess()
@@ -84,7 +84,7 @@ class DBRadio
   public function setState($newState)
   {
     $db = $this->getDBAccess();
-    $ip = $_SERVER['REMOTE_ADDR'];
+    $ip = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR']: '127.0.0.1' ;
     $db->query("update state set actual=$newState where ip='global'");
     $db->query("update state set actual=$newState where ip='$ip'");
     $db->query("insert or ignore into state (ip,actual) values('$ip',$newState)");

@@ -57,7 +57,8 @@
         <div data-role="navbar" class="myControlButtons">
          <ul>
            <li><a id="bPlay" data-role="button" href='#'> Play </a></li>
-           <li><a id="bStop" data-role="button" href='#'> Stop </a></li>
+           <li><a id="bStop" data-role="button" href='#'> Pause </a></li>
+           <li><a id="bOff" data-role="button" href='#'> PI Off </a></li>
          </ul>
         </div><!--navbar-->
       </div> <!--framed -->
@@ -106,6 +107,11 @@
 		 <a href="php/dbInterface.php" target="_blank">
 		 http://&lt;raspi-ip&gt;/radio/dbInterface.php</a>. Die Bedienung
 		 ohne Tastatur ist nicht empfehlenswert :-).</p>
+		<p>Auf der Seite Aktuell werden Lautst&auml;rkeregler, aktueller Sender und 
+		 drei Buttons zur Steuerung angezeigt. <br>
+		 Der Button PI Off fährt den PI herunter. Um wieder zu starten: einmal Spannungsversorgung
+		 ziehen und wieder einstecken. (Dazu muss in /etc/sudoers die Zeile www-data ALL=(ALL) NOPASSWD: /sbin/halt) 
+		 vorhanden sein.</p>		  
 		</div><!-- data-role content -->
 	<?php include("footer.php") ?>
 	</div> <!-- page  ende -->

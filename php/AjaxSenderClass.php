@@ -5,13 +5,20 @@ require_once('AjaxAnswer.php');
 
 use PHPMPDClient\MPD AS mpd;
 
+/*
+  nicht gut programmiert, zu wenig auf allgemeine nutzbarkeit geachtet
+  evaluate ist stark an $_POSt / $_GET orientiert
+*/
 
 class AjaxSender
 {
   private $action = NULL;
-  private $db;     
-  function __construct() {
-    $this->action = $_REQUEST['action']; //get post and session 
+  private $db;
+  
+  private $volume, $destStation, $data;      
+
+  function __construct($action="") {
+      $this->action = isset($_REQUEST['action']) ? $_REQUEST['action'] : "" ; //get post and session 
   } 
 
     
@@ -69,7 +76,7 @@ class AjaxSender
     return $result;
   }
   //switch station, zero based
-  private function switchTo($station)
+  public function switchTo($station)
   {
     $db = new DBRadio();
     $this->tryConnectMpd();
@@ -79,12 +86,18 @@ class AjaxSender
     mpd::disconnect();
     return $result;
   }
-  private function setVolume($value)
+  public function setVolume($value)
   {
     $this->tryConnectMpd();
     $result= mpd::setVolume($value);
     mpd::disconnect();
     return $result;
+  }
+  public function showActual()
+  {
+    $db = new DBRadio();
+    $result = $db->setState(States::Actual);
+    return $result;   
   }
   private function pause($value)
   {
@@ -105,9 +118,12 @@ class AjaxSender
   }
   //--------------------------------
   //action which is requested
-  public function evaluateRequest()
+  public function evaluateRequest($action="")
   {
     $result = new AjaxAnswer("ok");
+    if ($action != "")
+      $this->action = $action;
+      
     if ($this->action === NULL)
     {
       $result->infoText = "no action requested";
@@ -124,8 +140,7 @@ class AjaxSender
             $result->result = $db->setState(States::Stations); 
           break;
           case "showActual": //show stations clicked
-            $db = new DBRadio();
-            $result->result = $db->setState(States::Actual); 
+            $result->result = showActual();
           break;
           case "liste":
               $db = new DBRadio();
@@ -186,10 +201,4 @@ class AjaxSender
     return json_encode($result); 
   }
 }
-
-$sender = new AjaxSender();
-//phpinfo();
-$retVal = $sender->evaluateRequest();
-echo $retVal;
-//echo "hello";
 ?>
