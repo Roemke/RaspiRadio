@@ -1,4 +1,9 @@
 eigene Notizen
+-----------------------------------------
+Achtung bei git muss man beim checkout ein sudo 
+verwenden um die db mit zu bekommen RadioMPD.sqlite gehoert www-data
+oder ich muesste die rechte mal aendern 
+---------------------------------------
 - installation von mpd 0.19 - haette ich mir sparen koennen
 - ajax-Variante laeuft halbwegs habe mpd-Zusatzklasse von github installiert
   PHP-MPD-Client-develop.zip und erweitert
@@ -41,5 +46,5 @@ außerdem init-script /etc/init.d/radio als hard link auf
 /var/www/radio/radio, dieses ruft startRadio.sh und ein 
 pi@raspberrypi /etc/init.d $ sudo insserv radio
 um es als start-script zu etablieren - mal versuchen
-
+-------------------------------------------
  
