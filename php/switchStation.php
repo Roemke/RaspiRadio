@@ -13,13 +13,23 @@ $down = isset($_GET['down']) ? true : false;
 
 if ($up || $down)
 {
-  $station = 0;
+   //actual station, hmm hier laeuft noch was falsch - keine Ahnung
+   $res = $sender->getStatus();
+   echo "<textarea rows=50 cols=120>";
+   echo $res;
+   echo "</textarea>";
+   //$station = $res->Pos;
+   //number of stations
+   //$db = new DBRadio();
+   //list($stations,$notUsed)=$db->getStationsFromDB();
+   //$anzahl = count($stations);
+   //$station = ($station >= $anzahl) ? 0 : $station;
+   //$station = ($station < 0) ? $anzahl -1 : $station;   
 }
-else
-{
-  $sender->switchTo($station);
-}
-echo "have station $station and up $up and down $down";
+//$sender->switchTo($station);
+//$res = $sender->currentSong();
+
+echo "now on " . $res->Name;
 //phpinfo();
 //$sender->switchTo(0);
 //$sender->showActual();

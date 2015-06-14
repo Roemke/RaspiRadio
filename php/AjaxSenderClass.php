@@ -52,7 +52,7 @@ class AjaxSender
     }
   }  
   //returns mpd status
-  private function getStatus()
+  public function getStatus()
   {
     $this->tryConnectMpd();
     $result = mpd::status();
@@ -61,7 +61,7 @@ class AjaxSender
     return $result;
   }
   //returns current song
-  private function currentSong()
+  public function currentSong()
   {
     $this->tryConnectMpd();
     $result = mpd::currentSong();
@@ -70,7 +70,7 @@ class AjaxSender
     $result['values'] = $this->objectFromMPDValues($result['values']);
     $db = new DBRadio();
     list($stations,$notUsed)=$db->getStationsFromDB();
-    //file_put_contents("/tmp/bla.txt",$stations[$result['values']]);
+    //file_put_contents("/tmp/bla.txt",$result['values']);
     //change name to value out of "my db"
     $result['values']->Name = $stations[$result['values']->Pos]['name'];    
     return $result;
