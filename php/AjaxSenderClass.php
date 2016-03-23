@@ -131,6 +131,7 @@ class AjaxSender
     }
     else 
     {
+      $result->infoText = $this->action; 
       try
       {
         switch ($this->action)
