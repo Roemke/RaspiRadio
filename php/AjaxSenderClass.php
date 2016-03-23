@@ -166,9 +166,7 @@ class AjaxSender
           case "off":
             $result->result = "PI shutdown";
             shell_exec("sudo /sbin/halt");
-          break;
-          
-          
+          break;          
           case "switch":
             $station = $_GET['station'];
             $result->result = $this->switchTo($station-1);
@@ -178,6 +176,26 @@ class AjaxSender
             break;
           case "volume":
             $result->result =$this->setVolume($_GET['value']);
+            break;
+          case "volumeUp":
+            $actualVolume = $this->getStatus()['values']->volume;
+            //file_put_contents("/tmp/a",var_export($actualVolume,true),FILE_APPEND);
+            $actualVolume += 1;
+            //file_put_contents("/tmp/a",$actualVolume."\n",FILE_APPEND);
+            $actualVolume = ($actualVolume > 100) ? 100 : $actualVolume;
+            $this->setVolume($actualVolume);
+            $result->result = $this->getStatus(); //aktuellen Status zurueck, dort 
+            //kann der client dann das aktuelle Volumen auslesen
+            break;
+          case "volumeDown":
+            $actualVolume = $this->getStatus()['values']->volume;
+            //file_put_contents("/tmp/a",var_export($actualVolume,true),FILE_APPEND);
+            $actualVolume -= 1;
+            //file_put_contents("/tmp/a",$actualVolume."\n",FILE_APPEND);
+            $actualVolume = ($actualVolume < 0) ? 0 : $actualVolume;
+            $this->setVolume($actualVolume);
+            $result->result = $this->getStatus(); //aktuellen Status zurueck, dort 
+            //kann der client dann das aktuelle Volumen auslesen
             break;
           case "save":
             $this->saveDbData($_POST['data']);

@@ -47,4 +47,5 @@ außerdem init-script /etc/init.d/radio als hard link auf
 pi@raspberrypi /etc/init.d $ sudo insserv radio
 um es als start-script zu etablieren - mal versuchen
 -------------------------------------------
+2016-03: ein bisschen an der Steuerung ueber die pebble gearbeitet
  
