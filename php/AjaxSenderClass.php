@@ -149,6 +149,10 @@ class AjaxSender
               $pos = $this->currentSong()['values']->Pos ; 
               $result->actualPos = $pos;               
           break;
+          case "listOnlyStationNames":
+            $db = new DBRadio();
+            $result->result = $db->getStationsSimpleFromDB();
+          break;
           case "statusAndCurrent":
             $res1 = $this->getStatus();
             $res2 = $this->currentSong();

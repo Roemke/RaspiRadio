@@ -81,6 +81,17 @@ class DBRadio
     return array($result, $stations);;
   }
   
+  //get list of sender as simple list
+  public function getStationsSimpleFromDB()
+  {
+    $db=$this->getDBAccess();
+    $dbRes = $db->query("SELECT name FROM sender ORDER by pos");
+    $result = array();
+    while ($row= $dbRes->fetch(PDO::FETCH_ASSOC))
+      $result[] = $row['name'];
+    return $result;    
+  }
+  
   //set actual 
   public function setState($newState)
   {

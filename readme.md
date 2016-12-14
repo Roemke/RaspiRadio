@@ -28,4 +28,5 @@ der User unter dem der Webserver laeuft, schreiben darf.
 Installation - kopiere alles nach /var/www/radio oder was auch immer
 das Verzeichnis des Webservers ist.
 
+todo: Dokumentation Einbindung in fhem per HTTPDMOD
 
