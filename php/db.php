@@ -22,8 +22,9 @@ abstract class States
 
 class DBRadio
 {
-  private $dbName = "/var/www/radio/data/RadioMPD.sqlite";
-   
+  //private $dbName = "/var/www/radio/data/RadioMPD.sqlite";
+  private $dbName = "/tmp/RadioMPD.sqlite";
+  //switch auf tmp wg. ro root dateisystem 
   //returns handle for db  
   private function getDBAccess()
   {
