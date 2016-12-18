@@ -13,6 +13,9 @@ Benoetigt:
   sudo apt-get install php5-sqlite 
 - laufender mpd
 
+Eine minimal l&auml;ngere Beschreibung findet man unter 
+[RaspiRadio](http://zb42.de/cc/raspiRadio.php)
+
 Die Seite nutzt einmal pro sekunde ein Polling, so dass ein Display
 am Pi, welches die Seite anzeigt aktualisiert wird.
 
@@ -28,5 +31,14 @@ der User unter dem der Webserver laeuft, schreiben darf.
 Installation - kopiere alles nach /var/www/radio oder was auch immer
 das Verzeichnis des Webservers ist.
 
-todo: Dokumentation Einbindung in fhem per HTTPDMOD
+todo: Dokumentation Einbindung in fhem per HTTPMOD
+Nein eigenes Modul geschrieben lege mal eine Kopie hierher, auch 
+wenn sie natuerlich in das Verzeichnis der perl-module auf dem 
+fhem raspberry gehört? 
+
+Steuern lässt sich das Radio auch über eine Pebble - mal sehen, ob ich
+das noch pflege - es läuft und pebble ist aufgekauft (Ende 2016)
+
+
+
 
