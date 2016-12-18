@@ -31,7 +31,8 @@ der User unter dem der Webserver laeuft, schreiben darf.
 Installation - kopiere alles nach /var/www/radio oder was auch immer
 das Verzeichnis des Webservers ist.
 
-todo: Dokumentation Einbindung in fhem per HTTPMOD
+todo: Dokumentation Einbindung in fhem per HTTPMOD.
+
 Nein eigenes Modul geschrieben lege mal eine Kopie hierher, auch 
 wenn sie natuerlich in das Verzeichnis der perl-module auf dem 
 fhem raspberry gehört? 
