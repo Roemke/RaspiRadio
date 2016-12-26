@@ -69,6 +69,7 @@ sub RASPIO_Define($$)
   # fehler interpretiert und angezeigt
 }
 
+
 #aufruf nach dem ungültig werden
 #stuertz manchmal ab, liegt nicht am RemoveInternalTimer
 #liegt einfach daran dass ich den namen falsch eigegeben habe ... oben 
@@ -279,6 +280,12 @@ sub RASPIO_parseHttpResponse($)
     my ($param, $err, $data) = @_;
     my $hash = $param->{hash};
     my $name = $hash->{NAME};
+    #momentanen daten holen
+    my $volumeSet = ReadingsVal($name,"volume",0);
+    my $stateSet  = ReadingsVal($name,"state",0);
+    my $stationSet  = ReadingsVal($name,"station",0);
+    my $titleSet  = ReadingsVal($name,"title",0);
+            
     if($err ne "")                         # wenn ein Fehler bei der HTTP Abfrage aufgetreten ist
     {
         Log3 $name, 5, "$name: error while requesting ".$param->{url}." - $err";   # Eintrag fürs Log
@@ -296,14 +303,24 @@ sub RASPIO_parseHttpResponse($)
         Log3 $name, 5, "$name: Extracted Volume $volume, on Station $station, Playing $title, status is $state";
         #An dieser Stelle die Antwort parsen / verarbeiten mit $data
         #readingsSingleUpdate($hash, "fullResponse", $data);   # Readings erzeugen
-        
-        readingsBeginUpdate($hash);
-        readingsBulkUpdate($hash,'volume',$volume);
-        readingsBulkUpdate($hash,'station',$station);
-        readingsBulkUpdate($hash,'title',$title);
         $state = ($state eq "play") ? "on" : "off";
-        readingsBulkUpdate($hash,'state',$state);
-        readingsEndUpdate($hash,1); #auch hier event noetig?    
+
+        if ($volumeSet != $volume){  
+          readingsSingleUpdate($hash, "volume", $volume,1); }
+        if ($stateSet ne $state)  {  
+          readingsSingleUpdate($hash, "state", $state,1); }
+        if ($stationSet ne $station) {
+          readingsSingleUpdate($hash, "station", $station,1); }
+        if ($titleSet ne $title){
+          readingsSingleUpdate($hash, "title", $title,1); }
+                             
+        #zu viele updates mit events    
+        #readingsBeginUpdate($hash);
+        #readingsBulkUpdate($hash,'volume',$volume);
+        #readingsBulkUpdate($hash,'station',$station);
+        #readingsBulkUpdate($hash,'title',$title);
+        #readingsBulkUpdate($hash,'state',$state);
+        #readingsEndUpdate($hash,1); #auch hier event noetig?, ja damit evtl. anzeige aktualisiert    
     }
     InternalTimer(gettimeofday()+$hash->{inter}, "RASPIO_Update", $hash);#naechste Abfrage 
 }
