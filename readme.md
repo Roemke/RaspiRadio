@@ -35,11 +35,16 @@ todo: Dokumentation Einbindung in fhem per HTTPMOD.
 
 Nein eigenes Modul geschrieben lege mal eine Kopie hierher, auch 
 wenn sie natuerlich in das Verzeichnis der perl-module auf dem 
-fhem raspberry gehört? 
+fhem raspberry gehört 
 
 Steuern lässt sich das Radio auch über eine Pebble - mal sehen, ob ich
 das noch pflege - es läuft und pebble ist aufgekauft (Ende 2016)
 
+Es sollte ein readonly Dateisystem genutzt werden, das war ursprünglich 
+mit einer ro root partition umgesetzt (Anleitung im Netz). 
+Da das Radio auf einen Rechner mit Display umzieht dort mit overlayfs 
+gearbeitet.
+ 
 
 
 
